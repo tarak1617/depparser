@@ -17,4 +17,7 @@ prerequisite for this to run are <br>
 
 usage:: 'python main.py -h' gives the usage.<br>
 
+
+evaluation:: can be done with maltevaluator(http://www.maltparser.org/malteval.html). <br>
+
 Data for training or parsing is not included in this repository.<br>
