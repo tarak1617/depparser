@@ -33,9 +33,9 @@ def train_classifier(numpypath, ckptpath, lr, iters):
         init = tf.global_variables_initializer()
         sess.run(init)
         inH = np.zeros([BATCHSIZE, CELLSIZE * NLAYERS])
-        X_data = np.load(numpypath + 'X2new.npy')
-        Y_data = np.load(numpypath + 'Y2new.npy')
-        X_lengths = np.load(numpypath + 'X_lengthsnew.npy')
+        X_data = np.load(numpypath + 'X2.npy')
+        Y_data = np.load(numpypath + 'Y2.npy')
+        X_lengths = np.load(numpypath + 'X_lengths.npy')
         s = X_lengths.size
         iters=iters*s+1
         epoch =0
@@ -78,27 +78,6 @@ def next_batch(bs, X_data, X_lengths, Y_data):
     Xres = Xres.reshape([bs, ma, CELLSIZE])
     return Xres, XLres, Yres
 
-def parse(testfile, numpypath, ckptpath):
-
-    return parsing(testfile,wordvecpath, numpypath, ckptpath, Yp, Yd, H, X, XL, Hin, keep_prob)
-
-
-def evaluate():
-    csvfile = open('scores.csv', 'a')
-    fieldnames = ['learinig rate', 'number of iterations', 'labelled attachment score', 'unlabelled attachment score',
-                  'label accuracy']
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-    # writer.writeheader()
-    ckpts = "./classifiersave"
-    for file in os.listdir(ckpts):
-        if file.endswith("_.index"):
-            lr, iters = re.split('_', file)[1:3]
-            ckptpath = ckpts + "/classifier_" + lr + "_" + iters + "_"
-            las, uas, la = parse("test100.conll", "./numpysave/outH_" + str(lr) + "_" + str(iters) + "_.npy", ckptpath)
-            writer.writerow(
-                {'learinig rate': float(lr), 'number of iterations': float(iters), 'labelled attachment score': las,
-                 'unlabelled attachment score': uas, 'label accuracy': la})
-
 ap = argparse.ArgumentParser()
 ap.add_argument("-t","--train", help="input file for training")
 ap.add_argument("-p","--parse", help="input file for parsing")
@@ -110,17 +89,17 @@ traindatafile = args.train
 testfile = args.parse
 lr = float(args.learningrate)
 iters = int(args.iterations)
-numpypath = './numpysave/'
-ckptpath = './classifiersave/'
+numpypath = './tmpdata/'
+ckptpath = './tmpdata/'
 
 
 if traindatafile : traindata1(traindatafile, args.wordvecs)
 if args.wordvecs : wordvecpath=args.wordvecs
-else: wordvecpath = './Word2Vec/vecs.bin'
+else: wordvecpath = './tmpdata/vecs.bin'
 mode = gensim.models.Word2Vec.load(wordvecpath)
 vecdims = mode.layer1_size
 vecdims = vecdims+11+2+2
-with open('./dictionaries/deprel.json', 'r') as fp:
+with open('./tmpdata/deprel.json', 'r') as fp:
     depreldic = json.load(fp)
 ndeprel=len(depreldic)
 tf.variable_scope('tfl', reuse=True)
@@ -144,9 +123,9 @@ Y = tf.nn.softmax(Ylogits)
 Yp = tf.argmax(tf.slice(Y[0], [0], [4]), 0)
 Yd = tf.argmax(tf.slice(Y[0], [4], [52]), 0)
 
-if traindatafile : train_classifier('./numpysave/', './classifiersave/', lr, iters)
+if traindatafile : train_classifier(numpypath, ckptpath, lr, iters)
 
-if testfile : evaluate()
+if testfile : parsing(testfile,wordvecpath, numpypath, ckptpath, Yp, Yd, H, X, XL, Hin, keep_prob)
 
 
 
