@@ -12,10 +12,10 @@ import logging
 def parsing(file, wordvecpath, numpypath, ckptpath,Yp, Yd, H, X, XL, Hin, keep_prob):
     logging.info('parsing started')
     f = open(file, 'r')
-    with open('./dictionaries/deprel.json', 'r') as fp:
+    with open('./tmpdata/deprel.json', 'r') as fp:
         deps = json.load(fp)
     ndeprel = len(deps)
-    with open('./dictionaries/all.json', 'r') as fp:
+    with open('./tmpdata/all.json', 'r') as fp:
         dictionary2 = json.load(fp)
     mode = gensim.models.Word2Vec.load(wordvecpath)
     vecdims = mode.layer1_size
@@ -154,7 +154,7 @@ def filewrite(f, str):
     else: f.write('_')
     f.write('\t')
 def riofdeprel(id):
-    with open('./dictionaries/deprel.json', 'r') as fp:
+    with open('./tmpdata/deprel.json', 'r') as fp:
         dic = json.load(fp)
     dic = dict((v, k) for k, v in dic.items())
     if id in dic:
@@ -205,7 +205,7 @@ def featureids(feats1, dic):
     return f
 
 def iofdeprel(deprel):
-    with open('./dictionaries/deprel.json', 'r') as fp:
+    with open('./tmpdata/deprel.json', 'r') as fp:
         dic = json.load(fp)
     if deprel in dic:
         return dic[deprel]
@@ -229,24 +229,3 @@ def removelastline(f):
     w.writelines([i for i in lines[:-1]])
     w.close()
     return
-
-def evaluate():
-    var = './'
-    pipe = subprocess.Popen(["perl", var+"eval07.pl", "-q", "-g", "test100.conll", "-s", "output.conll"], stdout=subprocess.PIPE)
-    out = pipe.stdout.read()
-    las, uas, la = re.findall('[\d]+[.][\d]+', str(out))
-    # outfile = open('logs.txt', 'a')
-    # outfile.write(str(out))
-    # print (out)
-    return las,uas,la
-
-
-# ckptpath = "./classifiersave/classifier_0.01_10_"
-# numpypath = "./numpysave/outH_0.01_10_.npy"
-# testfile = 'test100.conll'
-# # # f = open(testfile, 'r')
-# print (parsing(testfile, numpypath, ckptpath))
-
-
-
-
