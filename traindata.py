@@ -11,12 +11,12 @@ import logging
 def training(fn, wordvecpath):
     if not wordvecpath:
         word2vec(fn)
-        wordvecpath = './Word2Vec/vecs.bin'
+        wordvecpath = './tmpdata/vecs.bin'
     ndeprel = dictionaries(fn)
     X_lengths = np.array([])
     Arcs = namedtuple('Arcs', ['headid', 'headform', 'tailid', 'tailform', 'deprel'])
     Transition = namedtuple('Transition', ['transition', 'label'])
-    with open('./dictionaries/deprel.json', 'r') as fp:
+    with open('./tmpdata/deprel.json', 'r') as fp:
         dictionary2 = json.load(fp)
     f = open(fn, 'r')
     data = f.read()
@@ -200,7 +200,7 @@ def leftchild(stackc, arcs):
     return deprel
 
 def iofdeprel(ele):
-    with open('./dictionaries/deprel.json', 'r') as fp:
+    with open('./tmpdata/deprel.json', 'r') as fp:
         dict = json.load(fp)
     if ele in dict: return dict[ele]
     return -1
@@ -218,15 +218,3 @@ def pcheck(id1,id2,sentence):
                 flag=False
                 break
     return flag
-
-# fn = 'trainfile.conll'
-# numpypath = './numpysave/'
-# X2new, Y2new, X_lengthsnew = training(fn)
-# print (X2new.shape)
-# np.save(numpypath+'X2new', X2new)
-# print (X_lengthsnew.shape)
-# X_lengthsnew = X_lengthsnew.astype(int)
-# np.save(numpypath+'X_lengthsnew', X_lengthsnew)
-# print (Y2new.shape)
-# Y2new = Y2new.astype(int)
-# np.save(numpypath+'Y2new', Y2new)
