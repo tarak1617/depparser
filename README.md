@@ -9,7 +9,7 @@ This is a Arg-Eager Algorithm implementation, which handles projective dependenc
 
 
 prerequisite for this to run are <br> 
-1.Python <br>
+1.Python3 <br>
 2.Numpy 1.12 <br>
 3.Tensorflow 1.0 <br>
 4.gensim 0.13.4.1 <br>
